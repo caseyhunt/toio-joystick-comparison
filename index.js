@@ -181,6 +181,20 @@ const gCubes = [ undefined, undefined, undefined ];
       }
   }
 
+  const timedMove = (moveID, speed) => {
+    const cube = gCubes[0];
+    if(moveID == 1){
+    var buf = new Uint8Array([ 0x02, 0x01, 0x01, speed, 0x02, 0x01, speed, 0x0A]);
+  }else if(moveID == 2){
+    var buf = new Uint8Array([ 0x02, 0x01, 0x02, speed, 0x02, 0x02, speed, 0x0A]);
+  }else if(moveID == 3){
+    var buf = new Uint8Array([ 0x02, 0x01, 0x02, speed, 0x02, 0x01, speed, 0x0A]);
+  }else if(moveID == 4){
+    var buf = new Uint8Array([ 0x02, 0x01, 0x01, speed, 0x02, 0x02, speed, 0x0A]);
+  }
+  cube.moveChar.writeValue( buf );
+  }
+
 
   const cubeMove = ( moveID, cubeno,speed ) => {
       const cube = gCubes[cubeno];
@@ -188,10 +202,12 @@ const gCubes = [ undefined, undefined, undefined ];
       // forward
 
       console.log(speed);
+      //forward
       if(moveID==1){
       buf = new Uint8Array([ 0x01, 0x01, 0x01, speed, 0x02, 0x01, speed]);
       console.log('cube ' + cubeno + " moving forward");
     }else if (moveID==2){
+      //backward
       buf = new Uint8Array([ 0x01, 0x01, 0x02, speed, 0x02, 0x02, speed]);
     }else if (moveID==3){
       buf = new Uint8Array([ 0x01, 0x01, 0x02, speed, 0x02, 0x01, speed]);
@@ -208,144 +224,177 @@ const gCubes = [ undefined, undefined, undefined ];
   }
 
 
-  function stopping(n){
-       cubeStop(0);
+function stopping(n){
+     cubeStop(0);
+ };
+
+
+function movingForward(n){
+    console.log('moving forward');
+    if(n ==0){
+    cubeMove( 1 ,0 , speed1);
+  }else if(n==2 || n==1){
+    timedMove(1,speed1);
+  }
+
+  };
+
+function movingBack(n){
+  if(n==0){
+      cubeMove( 2 ,0 , speed1);
+    }else if(n==2||n==1){
+      timedMove(2,speed1);
+    }
    };
 
+function movingR(n){
 
-   function movingForward(n){
-        console.log('moving forward');
-        cubeMove( 1 ,0 , speed1);
-      };
 
-    function movingBack(n){
-          cubeMove( 2 ,0 , speed1);
-       };
-
-   function movingR(n){
+   console.log('moving right');
+   if(n==0){
      let turnspeed1 = Math.floor(parseInt(speed1)*0.5);
      turnspeed1 = '0x' + turnspeed1.toString(16);
+       cubeMove( 4 ,0 , turnspeed1);
+     }else if(n==1){
+       let turnspeed1 = Math.floor(parseInt(speed1)*0.35);
+       turnspeed1 = '0x' + turnspeed1.toString(16);
+       timedMove(4,turnspeed1);
 
-     console.log('moving right');
-         cubeMove( 4 ,0 , turnspeed1);
-      };
+     }else if(n==2){
+       let turnspeed1 = Math.floor(parseInt(speed1)*0.76);
+       turnspeed1 = '0x' + turnspeed1.toString(16);
+       timedMove(4,turnspeed1);
+     }
+    };
 
-      function movingL(n){
-
-
-           let turnspeed1 = Math.floor(parseInt(speed1)*0.5);
-           turnspeed1 = '0x' + turnspeed1.toString(16);
-
-
-           console.log('moving left');
-               cubeMove( 3 ,0 , turnspeed1);
-
-         };
-
-         const moveJoystick = (n, x, y, remote, speed) => {
-              console.log("local joystick control");
-              let cube = gCubes[n];
-              let maxspeed;
-              if(speed ==undefined){
-              if(n==0){
-              maxspeed = speed1;
-            }else if(n==1 ){
-            maxspeed = speed2;
-            }
-          }else{
-            maxspeed = speed;
-          }
-            console.log(maxspeed);
-              var buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x64, 0x02, 0x01, 0x64]);
-
-              let stopmot = 0;
-
-              console.log("x: "+x);
-              console.log("y: "+y);
-            //calculate whether the motor should go forward or backward.
-            //motor speeds are encoded as -.5 to .5 so if it's over 0 then it should go forward.
-              let m1fw;
-              let m2fw;
-
-              if(y<0){
-                console.log("forward");
-                m1fw = true;
-                m2fw = true
-              }else{
-                console.log("backward")
-                m1fw = false;
-                m2fw = false
-              }
-
-              let motor1;
-              let motor2;
-              if(x>0 && Math.abs(y)>0.07){
-                console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
-                  motor1 = Math.floor(Math.abs(y)*maxspeed);
-                  motor2 = Math.floor(motor1-Math.abs(motor1*x));
-                  //motor2 = Math.floor(motor1/Math.abs(x*maxspeed*.25));
-                  motor1 = motor1.toString(16);
-                  motor1 = "0x" + motor1;
-                  motor2 = motor2.toString(16);
-                  motor2 = "0x" + motor2;
+function movingL(n){
 
 
-              }else if(x==0 && Math.abs(y)>0.07){
-
-            console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
-              motor1 = Math.floor(Math.abs(y)*maxspeed);
-              motor1 = motor1.toString(16);
-              motor1 = "0x" + motor1;
-              motor2 = motor1;
-            }else if(x<=0 && Math.abs(y)>0.07){
-              console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
-                motor2 = Math.floor(Math.abs(y)*maxspeed);
-                motor1 = Math.floor(motor2-Math.abs(motor2*x));
-                //motor1 = Math.floor(motor2/Math.abs(x*maxspeed*.25));
-                motor2 = motor2.toString(16);
-                motor2 = "0x" + motor2;
-                motor1 = motor1.toString(16);
-                motor1 = "0x" + motor1;
-              }else if(Math.abs(y)<=0.07 && x>0){
-                console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
-                motor1 = Math.floor(Math.abs(x)*maxspeed*0.2);
-                motor2 = motor1;
-                m2fw = false;
-                m1fw = true;
-              }else if(Math.abs(y)<=0.07 && x<=0){
-                console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
-                motor2 = Math.floor(Math.abs(x)*maxspeed*0.2);
-                motor1 = motor2;
-                m1fw = false;
-                m2fw = true;
-              }
 
 
-              //write forward and backward values
-              if(m1fw == true && m2fw==true){
-               buf = new Uint8Array([ 0x01, 0x01, 0x01, motor1, 0x02, 0x01, motor2]);
-              //buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x32, 0x01, 0x01, 0x32]);
-              }else if(m1fw == false && m2fw==true){
-               buf = new Uint8Array([ 0x01, 0x01, 0x02, motor1, 0x02, 0x01, motor2]);
-              //buf = new Uint8Array([ 0x01, 0x01, 0x02, 0x96, 0x01, 0x01, 0x32]);
-            }else if(m1fw == true && m2fw == false){
-              buf = new Uint8Array([ 0x01, 0x01, 0x01, motor1, 0x02, 0x02, motor2]);
-              //buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x96, 0x02, 0x01, 0x64]);
+   console.log('moving left');
+   if(n==0){
 
-            }else{
-               buf = new Uint8Array([ 0x01, 0x01, 0x02, motor1, 0x02, 0x02, motor2]);
-                //  buf = new Uint8Array([ 0x01, 0x01, 0x02, 0x96, 0x02, 0x02, 0x64]);
-            }
+        let turnspeed1 = Math.floor(parseInt(speed1)*0.5);
+        turnspeed1 = '0x' + turnspeed1.toString(16);
+       cubeMove( 3 ,0 , turnspeed1);
+     }else if(n==1){
+       let turnspeed1 = Math.floor(parseInt(speed1)*0.35);
+       turnspeed1 = '0x' + turnspeed1.toString(16);
+       timedMove(4,turnspeed1);
+     }else if(n==2){
 
-              if( ( cube !== undefined ) && ( cube.moveChar !== undefined )){
-                console.log(buf);
-                  cube.moveChar.writeValue( buf );
-                  console.log('move');
+          let turnspeed1 = Math.floor(parseInt(speed1)*0.76);
+          turnspeed1 = '0x' + turnspeed1.toString(16);
+       timedMove(3, turnspeed1);
+     }
 
-              }
+ };
+
+ const moveJoystick = (n, x, y, remote, speed) => {
+      console.log("local joystick control");
+      let cube = gCubes[n];
+      let maxspeed;
+      if(speed ==undefined){
+      if(n==0){
+      maxspeed = speed1;
+    }else if(n==1 ){
+    maxspeed = speed2;
+    }
+  }else{
+    maxspeed = speed;
+  }
+    console.log(maxspeed);
+      var buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x64, 0x02, 0x01, 0x64]);
+
+      let stopmot = 0;
+
+      console.log("x: "+x);
+      console.log("y: "+y);
+    //calculate whether the motor should go forward or backward.
+    //motor speeds are encoded as -.5 to .5 so if it's over 0 then it should go forward.
+      let m1fw;
+      let m2fw;
+
+      if(y<0){
+        console.log("forward");
+        m1fw = true;
+        m2fw = true
+      }else{
+        console.log("backward")
+        m1fw = false;
+        m2fw = false
+      }
+
+      let motor1;
+      let motor2;
+      if(x>0 && Math.abs(y)>0.07){
+        console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+          motor1 = Math.floor(Math.abs(y)*maxspeed);
+          motor2 = Math.floor(motor1-Math.abs(motor1*x));
+          //motor2 = Math.floor(motor1/Math.abs(x*maxspeed*.25));
+          motor1 = motor1.toString(16);
+          motor1 = "0x" + motor1;
+          motor2 = motor2.toString(16);
+          motor2 = "0x" + motor2;
 
 
-          }
+      }else if(x==0 && Math.abs(y)>0.07){
+
+    console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+      motor1 = Math.floor(Math.abs(y)*maxspeed);
+      motor1 = motor1.toString(16);
+      motor1 = "0x" + motor1;
+      motor2 = motor1;
+    }else if(x<=0 && Math.abs(y)>0.07){
+      console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+        motor2 = Math.floor(Math.abs(y)*maxspeed);
+        motor1 = Math.floor(motor2-Math.abs(motor2*x));
+        //motor1 = Math.floor(motor2/Math.abs(x*maxspeed*.25));
+        motor2 = motor2.toString(16);
+        motor2 = "0x" + motor2;
+        motor1 = motor1.toString(16);
+        motor1 = "0x" + motor1;
+      }else if(Math.abs(y)<=0.07 && x>0){
+        console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+        motor1 = Math.floor(Math.abs(x)*maxspeed*0.2);
+        motor2 = motor1;
+        m2fw = false;
+        m1fw = true;
+      }else if(Math.abs(y)<=0.07 && x<=0){
+        console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+        motor2 = Math.floor(Math.abs(x)*maxspeed*0.2);
+        motor1 = motor2;
+        m1fw = false;
+        m2fw = true;
+      }
+
+
+      //write forward and backward values
+      if(m1fw == true && m2fw==true){
+       buf = new Uint8Array([ 0x01, 0x01, 0x01, motor1, 0x02, 0x01, motor2]);
+      //buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x32, 0x01, 0x01, 0x32]);
+      }else if(m1fw == false && m2fw==true){
+       buf = new Uint8Array([ 0x01, 0x01, 0x02, motor1, 0x02, 0x01, motor2]);
+      //buf = new Uint8Array([ 0x01, 0x01, 0x02, 0x96, 0x01, 0x01, 0x32]);
+    }else if(m1fw == true && m2fw == false){
+      buf = new Uint8Array([ 0x01, 0x01, 0x01, motor1, 0x02, 0x02, motor2]);
+      //buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x96, 0x02, 0x01, 0x64]);
+
+    }else{
+       buf = new Uint8Array([ 0x01, 0x01, 0x02, motor1, 0x02, 0x02, motor2]);
+        //  buf = new Uint8Array([ 0x01, 0x01, 0x02, 0x96, 0x02, 0x02, 0x64]);
+    }
+
+      if( ( cube !== undefined ) && ( cube.moveChar !== undefined )){
+        console.log(buf);
+          cube.moveChar.writeValue( buf );
+          console.log('move');
+
+      }
+
+
+  }
 
 
 
