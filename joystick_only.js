@@ -145,11 +145,11 @@ if(typeof myp5 === 'undefined'){
       }
 
       if(pressed == true && inCanvas ==true && insideTri == false){
-      p.print(outx, outy);
+      //p.print(outx, outy);
       if(typeof isconnected1 != 'boolean'){
         moveJoystick(0, outx, outy, true, undefined);
       }else {
-        p.print('local joystick')
+      //  p.print('local joystick')
       moveJoystick(0, outx, outy, false, undefined);
     }
     }else if(pressed == false&& inCanvas == true){
@@ -252,8 +252,8 @@ if(typeof myp5 === 'undefined'){
         stopping(0);
 
       }
-      p.print('movedir ' + movedir);
-      p.print(direction[movedir]);
+      // p.print('movedir ' + movedir);
+      // p.print(direction[movedir]);
     }
 
 
@@ -430,7 +430,7 @@ let joystick1 = function(p) {
         }
 
         if(pressed == true && inCanvas ==true && insideTri ==false){
-        p.print(outx, outy);
+        //p.print(outx, outy);
         if(typeof isconnected2 != 'boolean'){
           moveJoystick(0, outx, outy, true, undefined);
         }else {
@@ -513,22 +513,22 @@ let joystick1 = function(p) {
           movedir = 1;
           insideTri = true;
           movingForward(1);
-          p.print('forward');
+          //p.print('forward');
         }else if(p.mouseY< ry[0] && p.mouseY> ry[1] && p.mouseX<rx[1] && p.mouseX>rx[0]){
           movedir = 2;
           insideTri = true;
           movingR(1);
-          p.print('right');
+        //  p.print('right');
         }else if(p.mouseY<by[0] && p.mouseY> by[1]  && p.mouseX>tx[0] && p.mouseX<tx[1]){
           movedir = 3;
           insideTri = true;
           movingBack(1);
-          p.print('back');
+          //p.print('back');
         }else if(p.mouseY< ry[0] && p.mouseY> ry[1] && p.mouseX<lx[0] && p.mouseX>lx[1]){
           movedir = 4;
           insideTri = true;
           movingL(1);
-          p.print('left');
+        //  p.print('left');
         }else if(pressed==false && inCanvas == true){
           movedir = 0;
           stopping(0);
@@ -536,8 +536,8 @@ let joystick1 = function(p) {
 
 
         }
-        p.print('movedir ' + movedir);
-        p.print(direction[movedir]);
+      //  p.print('movedir ' + movedir);
+      //  p.print(direction[movedir]);
       }
 
 
@@ -716,7 +716,7 @@ let joystick1 = function(p) {
             }
 
             if(pressed == true && inCanvas ==true && insideTri ==false){
-            p.print(outx, outy);
+          //  p.print(outx, outy);
             if(typeof isconnected2 != 'boolean'){
               moveJoystick(0, outx, outy, true, undefined);
             }else {
