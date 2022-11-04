@@ -47,7 +47,10 @@ if(controllers.length>1){
   });
   let x_move = parseFloat(controller.axes[0]);
   let y_move = parseFloat(controller.axes[1]);
-  moveJoystick(0, x_move, y_move, false, undefined);
+  if(Math.abs(y_move) >0.05 || Math.abs(x_move) >0.05){
+    moveJoystick(0, x_move, y_move, false, undefined);
+  }
+
 
   moveJoystick(1, controller.axes[2], controller.axes[3], false, undefined);
     if(Math.abs(joystick[0]-controller.axes[0])>0.08 || Math.abs(joystick[1]-controller.axes[1])>0.08){
