@@ -69,11 +69,9 @@ let i=0;
 // console.log(controllers[0]);
 
 if(controllers.length>1){
-for (const controller of controllers){
-    const d = document.getElementById(`controller${i}`);
-    const buttons = d.getElementsByClassName("button");
+  for (const controller of controllers){
 
-    controller.buttons.forEach((button, i) => {
+    //controller.buttons.forEach((button, i) => {
     //   const b = buttons[i];
     //   let pressed = button === 1.0;
     //   let val = button;
@@ -94,14 +92,15 @@ for (const controller of controllers){
     //   a.textContent = `${i}: ${controller.axis.toFixed(4)}`;
     //   a.setAttribute("value", controller.axis + 1);
     // });
-  i+=1};
+  // i+=1});
+}
 }else{
   controller = controllers[0];
 
   controller.buttons.forEach((button, i) => {
     if(button.pressed == true){
       console.log(i);
-    }
+    }});
 
   controller.axes.forEach((axis, i) => {
     if(Math.abs(axis)>0.1){
@@ -110,41 +109,18 @@ for (const controller of controllers){
     //  p.print(outx, outy);
       moveJoystick(0, controller.axes[0], controller.axes[1], false, undefined);
     }
+  }else if(i==2 || i==3){
+    moveJoystick(1, controller.axes[2], controller.axes[3], false, undefined);
+
   }else{
     stopping(0)
   }
-    }
-  });
-  //   let pressed = button === 1.0;
-  //   let val = button;
-  // //
-  //   if (typeof button === "object") {
-  //     pressed = val.pressed;
-  //     val = val.value;
-  //   }
-  //   if(pressed != 0){
-  //     console.log(pressed ? "button pressed" : val);
-  //
-  //   }
-    //console.log(pressed ? "button pressed" : val);
-    // console.log(val);
-  });
-  //
-  //   const pct = `${Math.round(val * 100)}%`;
-  //   b.style.backgroundSize = `${pct} ${pct}`;
-  //   b.className = pressed ? "button pressed" : "button";
-  // });
-  //
-  // const axes = d.getElementsByClassName("axis");
-  // controller.axes.forEach((axis, i) => {
-  //   const a = axes[i];
-  //   a.textContent = `${i}: ${controller.axis.toFixed(4)}`;
-  //   a.setAttribute("value", controller.axis + 1);
-  // })
 
+});
 }
-  requestAnimationFrame(updateStatus);
 }
+
+
 
 function scangamepads() {
   const gamepads = navigator.getGamepads();

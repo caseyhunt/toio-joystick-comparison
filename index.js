@@ -1,6 +1,6 @@
 var speed1 = 0x64;
 
-const CUBE_ID_ARRAY = [ 0, 1 ];
+const CUBE_ID_ARRAY = [ 0, 1];
 const SUPPORT_CUBE_NUM = CUBE_ID_ARRAY.length;
 
 // Global Variables.
