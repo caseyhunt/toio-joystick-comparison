@@ -292,8 +292,121 @@ function movingL(n){
 
  };
 
- const moveJoystick = (n, x, y, remote, speed) => {
+
+
+
+ const moveJoystick = (n, x_joystick, y_joystick, remote, speed) => {
+  console.log("x_joystick = " + x_joystick + " y_joystick = " + y_joystick);
+  let cube = gCubes[n];
+  let maxspeed;
+  if(speed ==undefined){
+  if(n==0){
+  maxspeed = speed1;
+  }else if(n==1 ){
+  maxspeed = speed1;
+  }
+  }else{
+  maxspeed = speed1;
+  }
+  console.log(maxspeed);
+
+
+        let stopmot = 0;
+
+
+      //calculate whether the motor should go forward or backward.
+      //motor speeds are encoded as -.5 to .5 so if it's over 0 then it should go forward.
+        let m1fw;
+        let m2fw;
+
+        if(y_joystick<0){
+          console.log("forward");
+          m1fw = true;
+          m2fw = true
+        }else{
+          console.log("backward")
+          m1fw = false;
+          m2fw = false
+        }
+
+        let motor1;
+        let motor2;
+        if(x_joystick>0 && Math.abs(y_joystick)>0.5){
+          //console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+            motor1 = Math.floor(Math.abs(y_joystick)*maxspeed);
+            motor2 = Math.floor(motor1-Math.abs(motor1*x_joystick));
+            //motor2 = Math.floor(motor1/Math.abs(x*maxspeed*.25));
+            motor1 = motor1.toString(16);
+            motor1 = "0x" + motor1;
+            motor2 = motor2.toString(16);
+            motor2 = "0x" + motor2;
+
+
+        }else if(x_joystick==0 && Math.abs(y_joystick)>0.07){
+
+      //console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+        motor1 = Math.floor(Math.abs(y_joystick)*maxspeed);
+        motor1 = motor1.toString(16);
+        motor1 = "0x" + motor1;
+        motor2 = motor1;
+      }else if(x_joystick<=0 && Math.abs(y_joystick)>0.5){
+        //console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+          motor2 = Math.floor(Math.abs(y_joystick)*maxspeed);
+          motor1 = Math.floor(motor2-Math.abs(motor2*x_joystick));
+          //motor1 = Math.floor(motor2/Math.abs(x*maxspeed*.25));
+          motor2 = motor2.toString(16);
+          motor2 = "0x" + motor2;
+          motor1 = motor1.toString(16);
+          motor1 = "0x" + motor1;
+        }else if(Math.abs(y_joystick)<=0.5 && x_joystick>=0){
+          // console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+          motor1 = Math.floor(Math.abs(x_joystick)*maxspeed*0.2);
+          console.log('turning right ' + "x = " + x_joystick + " y= " + y_joystick);
+          motor2 = motor1;
+          m2fw = false;
+          m1fw = true;
+        }else if(Math.abs(y_joystick)<=0.5 && x_joystick<=0){
+        //  console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+          motor2 = Math.floor(Math.abs(x_joystick)*maxspeed*0.2);
+          console.log('turning left ' + "x = " + x_joystick + " y= " + y_joystick);
+          motor1 = motor2;
+          m1fw = false;
+          m2fw = true;
+        }
+
+
+        //write forward and backward values
+        if(m1fw == true && m2fw==true){
+         buf = new Uint8Array([ 0x01, 0x01, 0x01, motor1, 0x02, 0x01, motor2]);
+        //buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x32, 0x01, 0x01, 0x32]);
+        }else if(m1fw == false && m2fw==true){
+         buf = new Uint8Array([ 0x01, 0x01, 0x02, motor1, 0x02, 0x01, motor2]);
+        //buf = new Uint8Array([ 0x01, 0x01, 0x02, 0x96, 0x01, 0x01, 0x32]);
+      }else if(m1fw == true && m2fw == false){
+        buf = new Uint8Array([ 0x01, 0x01, 0x01, motor1, 0x02, 0x02, motor2]);
+        //buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x96, 0x02, 0x01, 0x64]);
+
+      }else{
+         buf = new Uint8Array([ 0x01, 0x01, 0x02, motor1, 0x02, 0x02, motor2]);
+          //  buf = new Uint8Array([ 0x01, 0x01, 0x02, 0x96, 0x02, 0x02, 0x64]);
+      }
+
+        if( ( cube !== undefined ) && ( cube.moveChar !== undefined )){
+          // console.log(buf);
+            cube.moveChar.writeValue( buf );
+            console.log('move');
+
+        }
+ }
+
+ const moveJoystick1 = (n, x_joystick, y_joystick, remote, speed) => {
+
       console.log("local joystick control");
+      // let x = x_joystick;
+      // let y = y_joystick;
+      console.log("x: "+x_joystick);
+      console.log("y: "+y_joystick);
+
       let cube = gCubes[n];
       let maxspeed;
       if(speed ==undefined){
@@ -310,8 +423,7 @@ function movingL(n){
 
       let stopmot = 0;
 
-      console.log("x: "+x);
-      console.log("y: "+y);
+
     //calculate whether the motor should go forward or backward.
     //motor speeds are encoded as -.5 to .5 so if it's over 0 then it should go forward.
       let m1fw;
@@ -330,7 +442,7 @@ function movingL(n){
       let motor1;
       let motor2;
       if(x>0 && Math.abs(y)>0.07){
-        console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+        //console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
           motor1 = Math.floor(Math.abs(y)*maxspeed);
           motor2 = Math.floor(motor1-Math.abs(motor1*x));
           //motor2 = Math.floor(motor1/Math.abs(x*maxspeed*.25));
@@ -342,13 +454,13 @@ function movingL(n){
 
       }else if(x==0 && Math.abs(y)>0.07){
 
-    console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+    //console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
       motor1 = Math.floor(Math.abs(y)*maxspeed);
       motor1 = motor1.toString(16);
       motor1 = "0x" + motor1;
       motor2 = motor1;
     }else if(x<=0 && Math.abs(y)>0.07){
-      console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+      //console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
         motor2 = Math.floor(Math.abs(y)*maxspeed);
         motor1 = Math.floor(motor2-Math.abs(motor2*x));
         //motor1 = Math.floor(motor2/Math.abs(x*maxspeed*.25));
@@ -356,15 +468,17 @@ function movingL(n){
         motor2 = "0x" + motor2;
         motor1 = motor1.toString(16);
         motor1 = "0x" + motor1;
-      }else if(Math.abs(y)<=0.07 && x>0){
-        console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+      }else if(Math.abs(y)<=0.5 && x>=0){
+        // console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
         motor1 = Math.floor(Math.abs(x)*maxspeed*0.2);
+        console.log('turning right ' + "x = " + x);
         motor2 = motor1;
         m2fw = false;
         m1fw = true;
-      }else if(Math.abs(y)<=0.07 && x<=0){
-        console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
+      }else if(Math.abs(y)<=0.5 && x<=0){
+      //  console.log(Math.floor(Math.abs(x)*maxspeed),Math.floor(Math.abs(y)*maxspeed));
         motor2 = Math.floor(Math.abs(x)*maxspeed*0.2);
+        console.log('turning left ' + "x = " + x);
         motor1 = motor2;
         m1fw = false;
         m2fw = true;

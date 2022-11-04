@@ -1,5 +1,6 @@
 const haveEvents = 'ongamepadconnected' in window;
 const controllers = {};
+const joystick = [0,0,0,0];
 
 function connecthandler(e) {
   addgamepad(e.gamepad);
@@ -8,45 +9,8 @@ function connecthandler(e) {
 function addgamepad(gamepad) {
   controllers[gamepad.index] = gamepad;
 
-  const d = document.createElement("div");
-  d.setAttribute("id", `controller${gamepad.index}`);
-
-  const t = document.createElement("h1");
-  t.textContent = `gamepad: ${gamepad.id}`;
-  d.appendChild(t);
-
-  const b = document.createElement("div");
-  b.className = "buttons";
-  gamepad.buttons.forEach((button, i) => {
-    const e = document.createElement("span");
-    e.className = "button";
-    e.textContent = i;
-    b.appendChild(e);
-  });
-
-  d.appendChild(b);
-
-  const a = document.createElement("div");
-  a.className = "axes";
-
-  gamepad.axes.forEach((axis, i) => {
-    const p = document.createElement("progress");
-    p.className = "axis";
-    p.setAttribute("max", "2");
-    p.setAttribute("value", "1");
-    p.textContent = i;
-    a.appendChild(p);
-  });
-
-  d.appendChild(a);
-
   // See https://github.com/luser/gamepadtest/blob/master/index.html
   const start = document.getElementById("start");
-  if (start) {
-    start.style.display = "none";
-  }
-
-  document.body.appendChild(d);
   requestAnimationFrame(updateStatus);
 }
 
@@ -55,14 +19,13 @@ function disconnecthandler(e) {
 }
 
 function removegamepad(gamepad) {
-  const d = document.getElementById(`controller${gamepad.index}`);
-  document.body.removeChild(d);
   delete controllers[gamepad.index];
 }
 
 function updateStatus() {
   if (!haveEvents) {
     scangamepads();
+    console.log("have events");
   }
 
 let i=0;
@@ -70,29 +33,6 @@ let i=0;
 
 if(controllers.length>1){
   for (const controller of controllers){
-
-    //controller.buttons.forEach((button, i) => {
-    //   const b = buttons[i];
-    //   let pressed = button === 1.0;
-    //   let val = button;
-    //
-    //   if (typeof button === "object") {
-    //     pressed = val.pressed;
-    //     val = val.value;
-    //   }
-    //
-    //   const pct = `${Math.round(val * 100)}%`;
-    //   b.style.backgroundSize = `${pct} ${pct}`;
-    //   b.className = pressed ? "button pressed" : "button";
-    // });
-    //
-    // const axes = d.getElementsByClassName("axis");
-    // controller.axes.forEach((axis, i) => {
-    //   const a = axes[i];
-    //   a.textContent = `${i}: ${controller.axis.toFixed(4)}`;
-    //   a.setAttribute("value", controller.axis + 1);
-    // });
-  // i+=1});
 }
 }else{
   controller = controllers[0];
@@ -103,22 +43,36 @@ if(controllers.length>1){
     }});
 
   controller.axes.forEach((axis, i) => {
-    if(Math.abs(axis)>0.1){
-      console.log(axis);
-      if(i==0 || i==1){
-    //  p.print(outx, outy);
-      moveJoystick(0, controller.axes[0], controller.axes[1], false, undefined);
-    }
-  }else if(i==2 || i==3){
-    moveJoystick(1, controller.axes[2], controller.axes[3], false, undefined);
 
-  }else{
-    stopping(0)
+  });
+  let x_move = parseFloat(controller.axes[0]);
+  let y_move = parseFloat(controller.axes[1]);
+  moveJoystick(0, x_move, y_move, false, undefined);
+
+  moveJoystick(1, controller.axes[2], controller.axes[3], false, undefined);
+    if(Math.abs(joystick[0]-controller.axes[0])>0.08 || Math.abs(joystick[1]-controller.axes[1])>0.08){
+      if(Math.abs(controller.axes[0]<0.05) && Math.abs(controller.axes[1]<0.05)){
+        console.log('stopping cube');
+        console.log(Math.abs(joystick[0]));
+        console.log(Math.abs(joystick[1]));
+        stopping(0);
+      }
+   }
+
+   if(Math.abs(joystick[2]-controller.axes[2])>0.08 || Math.abs(joystick[3]-controller.axes[3])>0.08){
+     if(Math.abs(joystick[2]<0.1) && Math.abs(joystick[3]<0.1)){
+           stopping(1)
+     }
   }
 
-});
+   joystick[i] = controller.axes[i]
+
+
+
+  requestAnimationFrame(updateStatus);
 }
 }
+
 
 
 
@@ -139,5 +93,6 @@ window.addEventListener("gamepadconnected", connecthandler);
 window.addEventListener("gamepaddisconnected", disconnecthandler);
 
 if (!haveEvents) {
- setInterval(scangamepads, 800);
+ setInterval(scangamepads, 1000);
+ console.log('scanning gamepad')
 }
