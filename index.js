@@ -300,10 +300,10 @@ function movingL(n){
       if(n==0){
       maxspeed = speed1;
     }else if(n==1 ){
-    maxspeed = speed2;
+    maxspeed = speed1;
     }
   }else{
-    maxspeed = speed;
+    maxspeed = speed1;
   }
     console.log(maxspeed);
       var buf = new Uint8Array([ 0x01, 0x01, 0x01, 0x64, 0x02, 0x01, 0x64]);
