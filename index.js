@@ -226,7 +226,7 @@ const gCubes = [ undefined, undefined, undefined ];
 
 
 function stopping(n){
-     cubeStop(0);
+     cubeStop(n);
  };
 
 

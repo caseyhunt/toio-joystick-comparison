@@ -25,7 +25,6 @@ function removegamepad(gamepad) {
 function updateStatus() {
   if (!haveEvents) {
     scangamepads();
-    console.log("have events");
   }
 
 let i=0;
