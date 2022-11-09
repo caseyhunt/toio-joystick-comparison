@@ -57,15 +57,22 @@ if(controllers.length>1){
         console.log('stopping cube 1');
         console.log(Math.abs(joystick[0]));
         console.log(Math.abs(joystick[1]));
-        stopping(0);
+        setTimeout(function(){
+      stopping(0);
+
+      }, 200);
+
       }
    }
 
    if(Math.abs(joystick[2]-controller.axes[2])>0.08 || Math.abs(joystick[3]-controller.axes[3])>0.08){
      if(Math.abs(controller.axes[2]<0.05) && Math.abs(controller.axes[3]<0.05)){
        console.log('stopping cube 2');
+       setTimeout(function(){
+     stopping(1);
 
-       stopping(1);
+     }, 200);
+
      }
   }
   controller.axes.forEach((axis, i) => {
